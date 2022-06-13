@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+//Repositories aren't super necessary when there's only one data source, but what a repository does is make all data be treated the same whether it comes from the internet or from a db or whatevs.
+
 public class NoteRepository {
     private NoteDao noteDao;
     private LiveData<List<Note>> allNotes;

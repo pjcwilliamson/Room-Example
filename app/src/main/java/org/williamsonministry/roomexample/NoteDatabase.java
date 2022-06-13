@@ -27,8 +27,6 @@ public abstract class NoteDatabase extends RoomDatabase {
         return instance;
     }
 
-    // TODO: 6/12/2022 THIS VIDEO NEXT: https://www.youtube.com/watch?v=JLwW5HivZg4 
-
     //This below is all to make it make a database when we first open the app.
     private static RoomDatabase.Callback roomCallback = new RoomDatabase.Callback() {
         @Override
