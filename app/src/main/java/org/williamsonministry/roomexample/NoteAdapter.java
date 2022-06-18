@@ -16,6 +16,7 @@ import java.util.List;
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder>{
     private List<Note> notes = new ArrayList<>();
     private Context mContext;
+    private OnItemClickListener listener;
 
     public NoteAdapter(Context mContext) {
         this.mContext = mContext;
@@ -24,6 +25,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public void setNotes(List<Note> notes) {
         this.notes = notes;
         notifyDataSetChanged();
+    }
+
+    public Note getNoteFromPosition(int position)   {
+        return notes.get(position);
     }
 
     @NonNull
@@ -54,6 +59,25 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
             txtTitle = itemView.findViewById(R.id.txtTitle);
             txtDescription = itemView.findViewById(R.id.txtDescription);
             txtPriority = itemView.findViewById(R.id.txtPriority);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (listener != null && position != RecyclerView.NO_POSITION /*This NO_POSITION may occur if you click a note while it's being deleted*/) {
+                        listener.onItemClick(notes.get(position));
+                    }
+                }
+            });
         }
+    }
+
+    //This is a good interface lesson here. Getting a callback to mainactivity
+    public interface OnItemClickListener    {
+        void onItemClick(Note note);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener)    {
+        this.listener = listener;
     }
 }
