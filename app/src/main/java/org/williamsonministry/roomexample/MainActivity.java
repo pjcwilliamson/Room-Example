@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         noteViewModel.getAllNotes().observe(this, new Observer<List<Note>>() {  /*This is LiveData secret sauce*/
             @Override
             public void onChanged(List<Note> notes) {
-                adapter.setNotes(notes);
+                adapter.submitList(notes);
             }
         });
 

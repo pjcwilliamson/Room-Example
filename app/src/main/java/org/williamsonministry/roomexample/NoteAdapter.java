@@ -8,27 +8,39 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder>{
-    private List<Note> notes = new ArrayList<>();
+//So in using ListAdapter, there's a bunch of changes in here which are explained in video 10. This is to use DiffUtil which compares two lists to figure out if something's been added or taken away or updated so we can use the appropriate notify
+//The arraylist of Notes is not explicitly stated, but managed by ListAdapter
+public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteViewHolder>{
     private Context mContext;
     private OnItemClickListener listener;
 
     public NoteAdapter(Context mContext) {
+        super(DIFF_CALLBACK);
         this.mContext = mContext;
     }
 
-    public void setNotes(List<Note> notes) {
-        this.notes = notes;
-        notifyDataSetChanged();
-    }
+    //This compares Notes so it can see what's changed in the list. Runs in background due to ListAdapter properties
+    private static /*Needs to be static cos we're accessing it in the constructor before the instance is created*/final DiffUtil.ItemCallback<Note> DIFF_CALLBACK = new DiffUtil.ItemCallback<Note>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Note oldItem, @NonNull Note newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Note oldItem, @NonNull Note newItem) {
+            return oldItem.toString().equals(newItem.toString());
+        }
+    };
 
     public Note getNoteFromPosition(int position)   {
-        return notes.get(position);
+        return getItem(position);
     }
 
     @NonNull
@@ -41,14 +53,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
-        holder.txtTitle.setText(notes.get(position).getTitle());
-        holder.txtDescription.setText(notes.get(position).getDescription());
-        holder.txtPriority.setText(String.valueOf(notes.get(position).getPriority()));
-    }
-
-    @Override
-    public int getItemCount() {
-        return notes.size();
+        holder.txtTitle.setText(getItem(position).getTitle());
+        holder.txtDescription.setText(getItem(position).getDescription());
+        holder.txtPriority.setText(String.valueOf(getItem(position).getPriority()));
     }
 
     class NoteViewHolder extends RecyclerView.ViewHolder    {
@@ -65,7 +72,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION /*This NO_POSITION may occur if you click a note while it's being deleted*/) {
-                        listener.onItemClick(notes.get(position));
+                        listener.onItemClick(getItem(position));
                     }
                 }
             });
